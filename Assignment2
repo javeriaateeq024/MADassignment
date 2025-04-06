@@ -1,0 +1,65 @@
+import React, { useState } from 'react';
+import { View, Text, TextInput, SectionList, TouchableOpacity, Alert, StyleSheet } from 'react-native';
+
+const contacts = [
+  { name: 'John', number: '9876543210', group: 'Family' },
+  { name: 'Sarah', number: '8765432109', group: 'Friends' },
+  { name: 'Michael', number: '7654321098', group: 'Work' },
+  { name: 'Emma', number: '6543210987', group: 'Family' },
+  { name: 'Liam', number: '5432109876', group: 'Friends' },
+  { name: 'Sophia', number: '4321098765', group: 'Work' },
+  { name: 'Lucas', number: '3210987654', group: 'Family' },
+  { name: 'Mia', number: '2109876543', group: 'Friends' },
+  { name: 'Ethan', number: '1098765432', group: 'Work' },
+  { name: 'Ava', number: '0987654321', group: 'Family' },
+];
+
+export default function App() {
+  const [search, setSearch] = useState('');
+
+  const filteredContacts = contacts.filter(
+    contact => contact.name.toLowerCase().includes(search.toLowerCase()) || contact.number.includes(search)
+  );
+
+  const groupedContacts = ['Family', 'Friends', 'Work'].map(group => ({
+    title: group,
+    data: filteredContacts.filter(contact => contact.group === group),
+  }));
+
+  const showContactDetails = (contact) => {
+    Alert.alert(
+      'Contact Details',
+      `Name: ${contact.name}\nNumber: ${contact.number}\nGroup: ${contact.group}`
+    );
+  };
+
+  return (
+    <View style={styles.container}>
+      <TextInput
+        style={styles.input}
+        placeholder="Search by name or number"
+        value={search}
+        onChangeText={setSearch}
+      />
+      <SectionList
+        sections={groupedContacts}
+        keyExtractor={(item, index) => item.name + index}
+        renderItem={({ item }) => (
+          <TouchableOpacity onPress={() => showContactDetails(item)} style={styles.item}>
+            <Text>{item.name} ({item.number})</Text>
+          </TouchableOpacity>
+        )}
+        renderSectionHeader={({ section: { title } }) => (
+          <Text style={styles.sectionHeader}>{title}</Text>
+        )}
+      />
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: { flex: 1, padding: 20, marginTop: 50 },
+  input: { borderWidth: 1, borderColor: '#aaa', marginBottom: 10, padding: 10, borderRadius: 5 },
+  item: { padding: 10, backgroundColor: '#f9f9f9', marginBottom: 5, borderRadius: 5 },
+  sectionHeader: { fontWeight: 'bold', fontSize: 18, marginTop: 10 }
+});
